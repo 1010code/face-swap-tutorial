@@ -51,7 +51,7 @@ def calculateDelaunayTriangles(rect, points):
     for p in points:
         subdiv.insert(p) 
     
-    triangleList = subdiv.getTriangleList();
+    triangleList = subdiv.getTriangleList()
     
     delaunayTri = []
     
@@ -119,7 +119,21 @@ def warpTriangle(img1, img2, t1, t2) :
     img2[r2[1]:r2[1]+r2[3], r2[0]:r2[0]+r2[2]] = img2[r2[1]:r2[1]+r2[3], r2[0]:r2[0]+r2[2]] * ( (1.0, 1.0, 1.0) - mask )
      
     img2[r2[1]:r2[1]+r2[3], r2[0]:r2[0]+r2[2]] = img2[r2[1]:r2[1]+r2[3], r2[0]:r2[0]+r2[2]] + img2Rect 
-    
+
+def ResizeWithAspectRatio(image, width=None, height=None, inter=cv2.INTER_AREA):
+    dim = None
+    (h, w) = image.shape[:2]
+
+    if width is None and height is None:
+        return image
+    if width is None:
+        r = height / float(h)
+        dim = (int(w * r), height)
+    else:
+        r = width / float(w)
+        dim = (width, int(h * r))
+
+    return cv2.resize(image, dim, interpolation=inter)
 
 if __name__ == '__main__' :
     
@@ -131,8 +145,8 @@ if __name__ == '__main__' :
         sys.exit(1)
 
     # Read images
-    filename1 = 'test2.jpg'
-    filename2 = 'test1.jpg'
+    filename1 = 'test1.jpg'
+    filename2 = 'test2.jpg'
     
     img1 = cv2.imread(filename1)
     img2 = cv2.imread(filename2)
@@ -191,7 +205,7 @@ if __name__ == '__main__' :
     
     # Clone seamlessly.
     output = cv2.seamlessClone(np.uint8(img1Warped), img2, mask, center, cv2.NORMAL_CLONE)
-    
+    output = ResizeWithAspectRatio(output, width=400)
     cv2.imshow("Face Swapped", output)
     cv2.waitKey(0)
     
